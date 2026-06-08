@@ -304,7 +304,11 @@
   <div class="preview-panel">
     <!-- Inline text editors above card -->
     <div style="width:302px;display:flex;flex-direction:column;gap:6px;">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+        <div>
+          <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:3px;">Brand</div>
+          <input type="text" id="in-brand" value="Ajio" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;padding:5px 8px;font-family:inherit;outline:none;" />
+        </div>
         <div>
           <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:3px;">Discount</div>
           <input type="text" id="in-discount" value="50-90% Off" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;padding:5px 8px;font-family:inherit;outline:none;" />
@@ -444,7 +448,11 @@
       <p class="hint" style="margin-bottom:12px;">PNG with transparent bg recommended</p>
       <div style="border-top:1px solid var(--border);padding-top:12px;">
         <div style="font-size:11px;color:var(--text3);margin-bottom:6px;display:flex;align-items:center;gap:4px;"><i class="ti ti-sparkles" style="font-size:12px;color:#a78bfa;"></i> AI Generate Hero Image</div>
-        <textarea id="model-prompt" placeholder="e.g. Two fashionable men in linen shirts, editorial lifestyle, transparent background" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;padding:7px 10px;font-family:inherit;resize:none;height:60px;outline:none;line-height:1.4;"></textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <span style="font-size:11px;color:var(--text3);">Auto-filled from Brand · Discount · Category</span>
+          <button id="refresh-prompt-btn" title="Regenerate prompt" style="background:none;border:none;cursor:pointer;padding:2px;color:var(--text3);font-size:13px;line-height:1;" onclick="autoFillModelPrompt()"><i class="ti ti-refresh"></i></button>
+        </div>
+        <textarea id="model-prompt" placeholder="Fill Brand, Discount and Category above to auto-generate..." style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;padding:7px 10px;font-family:inherit;resize:none;height:60px;outline:none;line-height:1.4;"></textarea>
         <button id="model-gen-btn" style="margin-top:8px;width:100%;padding:8px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:6px;color:#c4b5fd;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;">
           <i class="ti ti-wand" style="font-size:13px;"></i> <span id="model-gen-label">Generate Image</span>
         </button>
@@ -489,6 +497,20 @@ function bindText(inputId, targetId) {
 bindText('in-discount', 'txt-discount');
 bindText('in-category', 'txt-category');
 bindText('in-cashback', 'txt-cashback');
+
+/* ─── Auto-fill image prompt from Brand + Discount + Category ─── */
+function autoFillModelPrompt() {
+  const brand    = ($('in-brand').value    || '').trim();
+  const discount = ($('in-discount').value || '').trim();
+  const category = ($('in-category').value || '').trim();
+  if (!brand && !discount && !category) return;
+  const prompt = `Editorial lifestyle model image for ${brand} brand. ${category} fashion shoot. Aspirational, real human photography, dark or transparent background. No text, no logos. Styled for a ${discount} deal banner.`;
+  $('model-prompt').value = prompt;
+}
+['in-brand','in-discount','in-category'].forEach(id => {
+  $(id).addEventListener('input', autoFillModelPrompt);
+});
+autoFillModelPrompt();
 
 /* ─── Sale Badge toggle ─── */
 $('tog-badge').addEventListener('change', e => {
