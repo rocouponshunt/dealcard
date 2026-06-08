@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f11;
+    --surface: #18181c;
+    --surface2: #202026;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f0f2;
+    --muted: #888892;
+    --accent: #5b6ef5;
+    --accent2: #7c8cff;
+    --green: #3ecf8e;
+    --red: #f97066;
+    --panel-w: 320px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* TOPBAR */
+  .topbar {
+    height: 52px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .topbar-logo {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .topbar-logo span {
+    width: 24px; height: 24px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .topbar-divider { flex: 1; }
+  .btn {
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+  }
+  .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--accent2); }
+  .btn-green {
+    background: rgba(62,207,142,0.12);
+    color: var(--green);
+    border: 1px solid rgba(62,207,142,0.2);
+  }
+  .btn-green:hover { background: rgba(62,207,142,0.2); }
+
+  /* LAYOUT */
+  .workspace {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* LEFT PANEL */
+  .panel {
+    width: var(--panel-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .panel::-webkit-scrollbar { width: 4px; }
+  .panel::-webkit-scrollbar-track { background: transparent; }
+  .panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .panel-section {
+    border-bottom: 1px solid var(--border);
+    padding: 16px;
+  }
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section-label::before {
+    content: '';
+    width: 3px; height: 3px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: block;
+  }
+
+  .field { margin-bottom: 12px; }
+  .field:last-child { margin-bottom: 0; }
+  .field-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  .field input[type="text"],
+  .field input[type="number"],
+  .field textarea,
+  .field select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 7px;
+    padding: 8px 10px;
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+    resize: none;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    border-color: var(--accent);
+  }
+  .field textarea { min-height: 56px; line-height: 1.5; }
+
+  .color-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .color-field { display: flex; align-items: center; gap: 8px; }
+  .color-field input[type="color"] {
+    width: 28px; height: 28px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 0;
+    background: none;
+    flex-shrink: 0;
+  }
+  .color-field input[type="text"] {
+    flex: 1;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+
+  .upload-zone {
+    border: 1.5px dashed var(--border2);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .upload-zone:hover { border-color: var(--accent); background: rgba(91,110,245,0.04); }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .upload-zone .uz-icon { font-size: 22px; margin-bottom: 6px; }
+  .upload-zone .uz-label { font-size: 12px; color: var(--muted); }
+  .upload-zone .uz-label strong { color: var(--accent); font-weight: 500; }
+  .upload-thumb {
+    width: 100%;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 7px;
+    margin-top: 8px;
+    display: none;
+  }
+
+  /* AI Prompt */
+  .ai-prompt-wrap { position: relative; }
+  .ai-prompt-wrap textarea { padding-right: 38px; }
+  .ai-generate-btn {
+    position: absolute;
+    right: 8px; bottom: 8px;
+    width: 26px; height: 26px;
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .ai-generate-btn:hover { background: var(--accent2); }
+  .ai-status {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 5px;
+    min-height: 16px;
+    font-family: 'DM Mono', monospace;
+  }
+  .ai-status.loading { color: var(--accent2); }
+  .ai-status.success { color: var(--green); }
+  .ai-status.error { color: var(--red); }
+
+  /* Range */
+  .range-row { display: flex; align-items: center; gap: 8px; }
+  .range-row input[type="range"] {
+    flex: 1;
+    accent-color: var(--accent);
+    height: 4px;
+    cursor: pointer;
+  }
+  .range-val {
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    min-width: 32px;
+    text-align: right;
+  }
+
+  /* Toggle */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; }
+  .toggle {
+    width: 32px; height: 18px;
+    background: var(--surface2);
+    border-radius: 9px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    border: 1px solid var(--border2);
+    flex-shrink: 0;
+  }
+  .toggle.on { background: var(--accent); border-color: var(--accent); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 12px; height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    top: 2px; left: 2px;
+    transition: transform 0.2s;
+  }
+  .toggle.on::after { transform: translateX(14px); }
+
+  /* CANVAS AREA */
+  .canvas-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(91,110,245,0.04) 0%, transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, var(--border) 39px, var(--border) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, var(--border) 39px, var(--border) 40px);
+    gap: 24px;
+    overflow: auto;
+  }
+
+  /* THE CARD */
+  #card-preview {
+    width: 302px;
+    height: 200px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    font-family: 'Metropolis', 'DM Sans', system-ui, sans-serif;
+    flex-shrink: 0;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06);
+  }
+
+  #card-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 40%, #0c1b40 0%, #02050d 100%);
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+  }
+
+  .c-brand-header {
+    position: absolute;
+    top: 10px; left: 12px;
+    display: flex; align-items: center;
+    gap: 0;
+    z-index: 3;
+  }
+  #c-logo-badge {
+    height: 22px;
+    display: none;
+    border-radius: 4px;
+    object-fit: contain;
+  }
+  #c-campaign-badge {
+    width: 54px; height: 54px;
+    position: absolute;
+    top: 6px; left: 50%;
+    transform: translateX(-50%);
+    object-fit: contain;
+    display: none;
+    z-index: 3;
+  }
+
+  .c-hero {
+    position: absolute;
+    bottom: 52px; left: 12px;
+    z-index: 3;
+  }
+  #c-headline {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  #c-subhead {
+    color: #E2E8F0;
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 3px;
+  }
+
+  .c-incentive {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    display: flex; align-items: center;
+    background: linear-gradient(90deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 100%);
+    height: 38px;
+    z-index: 3;
+    overflow: hidden;
+  }
+  #c-ck-badge {
+    width: 38px; height: 38px;
+    background: #0036DA;
+    border-radius: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+  }
+  #c-cashback-text {
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    margin-left: 10px;
+    white-space: nowrap;
+  }
+
+  #c-model-img {
+    position: absolute;
+    right: 0; bottom: 0;
+    height: 90%;
+    z-index: 2;
+    object-fit: contain;
+    object-position: bottom right;
+    display: none;
+  }
+
+  #c-cta {
+    position: absolute;
+    bottom: 46px; right: 12px;
+    background: #fff;
+    color: #0036DA;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 8px;
+    z-index: 4;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+  }
+
+  /* ZOOM CONTROLS */
+  .zoom-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .zoom-btn {
+    width: 26px; height: 26px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 15px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .zoom-btn:hover { background: var(--border2); }
+  #zoom-label { font-family: 'DM Mono', monospace; min-width: 36px; text-align: center; }
+
+  /* RIGHT PANEL */
+  .right-panel {
+    width: 240px;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+  .right-panel .section-label { margin-bottom: 8px; }
+
+  .layer-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.12s;
+    border: 1px solid transparent;
+  }
+  .layer-item:hover { background: var(--surface2); }
+  .layer-item.active { background: rgba(91,110,245,0.1); border-color: rgba(91,110,245,0.25); }
+  .layer-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .layer-name { font-size: 12px; flex: 1; }
+  .layer-toggle { font-size: 14px; color: var(--muted); cursor: pointer; }
+
+  /* Export */
+  .export-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 2px; margin-bottom: 14px; }
+  .tab {
+    flex: 1;
+    padding: 6px 0;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .tab.active { background: var(--surface2); color: var(--text); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* SPINNER */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: var(--accent2);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+
+  /* Card scale wrapper */
+  #card-scale-wrap {
+    transform-origin: center center;
+    transition: transform 0.2s;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <span>CE</span>
+    Card Editor
+  </div>
+  <div style="font-size:12px; color:var(--muted); font-family:'DM Mono',monospace; background:var(--surface2); padding:4px 10px; border-radius:6px; border:1px solid var(--border);">302 × 200 px</div>
+  <div class="topbar-divider"></div>
+  <button class="btn btn-ghost" onclick="resetCard()">Reset</button>
+  <button class="btn btn-green" onclick="exportCard()">↓ Export PNG</button>
+</div>
+
+<!-- WORKSPACE -->
+<div class="workspace">
+
+  <!-- LEFT PANEL: EDITOR -->
+  <div class="panel">
+
+    <!-- BG SECTION -->
+    <div class="panel-section">
+      <div class="section-label">Background</div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchBgTab('upload', this)">Upload</div>
+        <div class="tab" onclick="switchBgTab('ai', this)">AI Generate</div>
+        <div class="tab" onclick="switchBgTab('color', this)">Color</div>
+      </div>
+
+      <div class="tab-content active" id="bg-tab-upload">
+        <div class="upload-zone" id="bg-upload-zone">
+          <input type="file" accept="image/*" onchange="loadBgImage(event)">
+          <div class="uz-icon">🖼</div>
+          <div class="uz-label"><strong>Click to upload</strong> or drag & drop<br>PNG, JPG, WEBP</div>
+          <img class="upload-thumb" id="bg-thumb">
+        </div>
+      </div>
+
+      <div class="tab-content" id="bg-tab-ai">
+        <div class="field">
+          <div class="field-label">Describe the background</div>
+          <div class="ai-prompt-wrap">
+            <textarea id="ai-bg-prompt" rows="3" placeholder="e.g. Dark navy fashion shoot, dramatic lighting, two male models in premium clothing..."></textarea>
+            <button class="ai-generate-btn" onclick="generateBgAI()" title="Generate">✦</button>
+          </div>
+          <div class="ai-status" id="ai-bg-status"></div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="bg-tab-color">
+        <div class="field">
+          <div class="field-label">Gradient Start</div>
+          <div class="color-field">
+            <input type="color" id="bg-color1" value="#0c1b40" oninput="updateBgGradient()">
+            <input type="text" id="bg-color1-hex" value="#0c1b40" oninput="syncColorPicker('bg-color1','bg-color1-hex'); updateBgGradient()">
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-label">Gradient End</div>
+          <div class="color-field">
+            <input type="color" id="bg-color2" value="#02050d" oninput="updateBgGradient()">
+            <input type="text" id="bg-color2-hex" value="#02050d" oninput="syncColorPicker('bg-color2','bg-color2-hex'); updateBgGradient()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGO -->
+    <div class="panel-section">
+      <div class="section-label">Brand Logo</div>
+      <div class="toggle-row" style="margin-bottom:12px;">
+        <span style="font-size:13px; color:var(--text);">Show brand logo</span>
+        <div class="toggle" id="logo-toggle" onclick="toggleLogo()"></div>
+      </div>
+      <div id="logo-fields" style="display:none;">
+        <div class="field">
+          <div class="field-label">Logo Image</div>
+          <div class="upload-zone" id="logo-upload-zone">
+            <input type="file" accept="image/*" onchange="loadLogoImage(event)">
+            <div class="uz-icon" id="logo-uz-icon">🏷</div>
+            <div class="uz-label" id="logo-uz-label"><strong>Click to upload</strong> logo<br>PNG with transparent bg recommended</div>
+            <img class="upload-thumb" id="logo-thumb">
+          </div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:10px;">
+        <div class="field-label">Campaign Badge (PNG)</div>
+        <div class="upload-zone" style="padding:10px;">
+          <input type="file" accept="image/*" onchange="loadCampaignBadge(event)">
+          <div class="uz-label"><strong>Upload badge</strong> image</div>
+          <img class="upload-thumb" id="badge-thumb" style="height:40px; object-fit:contain;">
+        </div>
+      </div>
+    </div>
+
+    <!-- HEADLINE -->
+    <div class="panel-section">
+      <div class="section-label">Hero Copy</div>
+      <div class="field">
+        <div class="field-label">Headline</div>
+        <input type="text" id="headline-text" value="50-90% Off" oninput="update('c-headline','innerHTML',this.value)">
+      </div>
+      <div class="field">
+        <div class="field-label">Headline Color</div>
+        <div class="color-field">
+          <input type="color" id="headline-color" value="#ffffff" oninput="updateHeadlineColor()">
+          <input type="text" id="headline-color-hex" value="#ffffff" oninput="syncColorPicker('headline-color','headline-color-hex'); updateHeadlineColor()">
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">Headline Size</div>
+        <div class="range-row">
+          <input type="range" min="14" max="36" value="22" id="headline-size" oninput="updateHeadlineSize(this.value)">
+          <span class="range-val" id="headline-size-val">22px</span>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">Subheadline</div>
+        <input type="text" id="subhead-text" value="On Men's Fashion" oninput="update('c-subhead','innerHTML',this.value)">
+      </div>
+      <div class="field">
+        <div class="field-label">Subheadline Color</div>
+        <div class="color-field">
+          <input type="color" id="subhead-color" value="#E2E8F0" oninput="updateSubheadColor()">
+          <input type="text" id="subhead-color-hex" value="#E2E8F0" oninput="syncColorPicker('subhead-color','subhead-color-hex'); updateSubheadColor()">
+        </div>
+      </div>
+    </div>
+
+    <!-- CASHBACK STRIP -->
+    <div class="panel-section">
+      <div class="section-label">Cashback Strip</div>
+      <div class="field">
+        <div class="field-label">Badge Label</div>
+        <input type="text" id="ck-badge-text" value="CK" oninput="update('c-ck-badge','innerHTML',this.value)">
+      </div>
+      <div class="field">
+        <div class="field-label">Badge Color</div>
+        <div class="color-field">
+          <input type="color" id="ck-color" value="#0036DA" oninput="updateCKColor()">
+          <input type="text" id="ck-color-hex" value="#0036DA" oninput="syncColorPicker('ck-color','ck-color-hex'); updateCKColor()">
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">Cashback Text</div>
+        <input type="text" id="cashback-text" value="Upto 7% Cashback" oninput="update('c-cashback-text','innerHTML',this.value)">
+      </div>
+    </div>
+
+    <!-- MODEL IMAGE -->
+    <div class="panel-section">
+      <div class="section-label">Model / Product Image</div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchModelTab('upload', this)">Upload</div>
+        <div class="tab" onclick="switchModelTab('ai', this)">AI Generate</div>
+      </div>
+
+      <div class="tab-content active" id="model-tab-upload">
+        <div class="upload-zone" id="model-upload-zone">
+          <input type="file" accept="image/*" onchange="loadModelImage(event)">
+          <div class="uz-icon">👤</div>
+          <div class="uz-label"><strong>Upload PNG cutout</strong><br>Works best with transparent bg</div>
+          <img class="upload-thumb" id="model-thumb">
+        </div>
+      </div>
+
+      <div class="tab-content" id="model-tab-ai">
+        <div class="field">
+          <div class="field-label">Describe the model / product</div>
+          <div class="ai-prompt-wrap">
+            <textarea id="ai-model-prompt" rows="3" placeholder="e.g. Two male models in premium linen shirts, white background, waist up, fashion shoot..."></textarea>
+            <button class="ai-generate-btn" onclick="generateModelAI()" title="Generate">✦</button>
+          </div>
+          <div class="ai-status" id="ai-model-status"></div>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:10px;">
+        <div class="field-label">Image Size</div>
+        <div class="range-row">
+          <input type="range" min="50" max="120" value="90" id="model-size" oninput="updateModelSize(this.value)">
+          <span class="range-val" id="model-size-val">90%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="panel-section">
+      <div class="section-label">Call to Action</div>
+      <div class="toggle-row" style="margin-bottom:12px;">
+        <span style="font-size:13px; color:var(--text);">Show "Grab Deal" button</span>
+        <div class="toggle" id="cta-toggle" onclick="toggleCTA()"></div>
+      </div>
+      <div id="cta-fields" style="display:none;">
+        <div class="field">
+          <div class="field-label">Button Text</div>
+          <input type="text" id="cta-text" value="Grab Deal" oninput="update('c-cta','innerHTML',this.value)">
+        </div>
+        <div class="field">
+          <div class="field-label">Button Background</div>
+          <div class="color-field">
+            <input type="color" id="cta-bg" value="#ffffff" oninput="updateCTABg()">
+            <input type="text" id="cta-bg-hex" value="#ffffff" oninput="syncColorPicker('cta-bg','cta-bg-hex'); updateCTABg()">
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-label">Button Text Color</div>
+          <div class="color-field">
+            <input type="color" id="cta-color" value="#0036DA" oninput="updateCTAColor()">
+            <input type="text" id="cta-color-hex" value="#0036DA" oninput="syncColorPicker('cta-color','cta-color-hex'); updateCTAColor()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end left panel -->
+
+  <!-- CENTER: CANVAS -->
+  <div class="canvas-area">
+    <div id="card-scale-wrap">
+      <div id="card-preview">
+        <div id="card-bg"></div>
+
+        <!-- Brand Logo (top-left) -->
+        <div class="c-brand-header">
+          <img id="c-logo-badge" src="" alt="brand logo" style="height:22px; display:none; border-radius:4px; object-fit:contain;">
+        </div>
+
+        <!-- Campaign Badge (top-center) -->
+        <img id="c-campaign-badge" src="" alt="campaign badge">
+
+        <!-- Hero Copy -->
+        <div class="c-hero">
+          <div id="c-headline">50-90% Off</div>
+          <div id="c-subhead">On Men's Fashion</div>
+        </div>
+
+        <!-- Incentive Strip -->
+        <div class="c-incentive">
+          <div id="c-ck-badge">CK</div>
+          <div id="c-cashback-text">Upto 7% Cashback</div>
+        </div>
+
+        <!-- Model Image -->
+        <img id="c-model-img" src="" alt="model">
+
+        <!-- CTA -->
+        <div id="c-cta" style="display:none;">Grab Deal</div>
+      </div>
+    </div>
+
+    <!-- Zoom Bar -->
+    <div class="zoom-bar">
+      <button class="zoom-btn" onclick="zoom(-0.25)">−</button>
+      <span id="zoom-label">100%</span>
+      <button class="zoom-btn" onclick="zoom(0.25)">+</button>
+      <button class="zoom-btn" onclick="zoomFit()" title="Fit" style="font-size:11px;">⊡</button>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL: LAYERS + EXPORT -->
+  <div class="right-panel">
+    <div>
+      <div class="section-label">Layers</div>
+      <div id="layers-list">
+        <div class="layer-item" onclick="focusLayer('bg')">
+          <div class="layer-dot" style="background:#5b6ef5"></div>
+          <span class="layer-name">Background</span>
+        </div>
+        <div class="layer-item" onclick="focusLayer('logo')">
+          <div class="layer-dot" style="background:#f5c842"></div>
+          <span class="layer-name">Brand Logo</span>
+        </div>
+        <div class="layer-item" onclick="focusLayer('hero')">
+          <div class="layer-dot" style="background:#3ecf8e"></div>
+          <span class="layer-name">Hero Copy</span>
+        </div>
+        <div class="layer-item" onclick="focusLayer('incentive')">
+          <div class="layer-dot" style="background:#f97066"></div>
+          <span class="layer-name">Cashback Strip</span>
+        </div>
+        <div class="layer-item" onclick="focusLayer('model')">
+          <div class="layer-dot" style="background:#a78bfa"></div>
+          <span class="layer-name">Model Image</span>
+        </div>
+        <div class="layer-item" onclick="focusLayer('cta')">
+          <div class="layer-dot" style="background:#38bdf8"></div>
+          <span class="layer-name">CTA Button</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px;">
+      <div class="section-label">Export</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button class="btn btn-green" onclick="exportCard()" style="width:100%;">↓ PNG (302×200)</button>
+        <button class="btn btn-ghost" onclick="exportCard2x()" style="width:100%;">↓ PNG @2x (604×400)</button>
+        <button class="btn btn-ghost" onclick="copyCSS()" style="width:100%;">⎘ Copy Config</button>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px;">
+      <div class="section-label">Card Size</div>
+      <div class="field">
+        <div class="field-label">Border Radius</div>
+        <div class="range-row">
+          <input type="range" min="0" max="32" value="16" id="card-radius" oninput="updateCardRadius(this.value)">
+          <span class="range-val" id="card-radius-val">16px</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- end workspace -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+let zoomLevel = 1;
+
+// --- Generic update ---
+function update(id, prop, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (prop === 'innerHTML') el.innerHTML = val;
+  else if (prop === 'src') el.src = val;
+  else el.style[prop] = val;
+}
+
+// --- Color sync ---
+function syncColorPicker(pickerId, hexId) {
+  const hex = document.getElementById(hexId).value;
+  if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+    document.getElementById(pickerId).value = hex;
+  }
+}
+
+// --- BG Tabs ---
+function switchBgTab(name, el) {
+  document.querySelectorAll('#bg-tab-upload, #bg-tab-ai, #bg-tab-color').forEach(t => t.classList.remove('active'));
+  document.getElementById('bg-tab-' + name).classList.add('active');
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+function switchModelTab(name, el) {
+  document.querySelectorAll('#model-tab-upload, #model-tab-ai').forEach(t => t.classList.remove('active'));
+  document.getElementById('model-tab-' + name).classList.add('active');
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// --- BG Image Upload ---
+function loadBgImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const bg = document.getElementById('card-bg');
+    bg.style.backgroundImage = `url(${e.target.result})`;
+    bg.style.backgroundSize = 'cover';
+    bg.style.backgroundPosition = 'center';
+    bg.style.background = `url(${e.target.result}) center/cover no-repeat`;
+    const thumb = document.getElementById('bg-thumb');
+    thumb.src = e.target.result;
+    thumb.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// --- Campaign Badge Upload ---
+function loadCampaignBadge(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const badge = document.getElementById('c-campaign-badge');
+    badge.src = e.target.result;
+    badge.style.display = 'block';
+    const thumb = document.getElementById('badge-thumb');
+    thumb.src = e.target.result;
+    thumb.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// --- Model Image Upload ---
+function loadModelImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('c-model-img');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    const thumb = document.getElementById('model-thumb');
+    thumb.src = e.target.result;
+    thumb.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// --- AI Background Generation ---
+async function generateBgAI() {
+  const prompt = document.getElementById('ai-bg-prompt').value.trim();
+  if (!prompt) return;
+  const status = document.getElementById('ai-bg-status');
+  status.className = 'ai-status loading';
+  status.innerHTML = '<span class="spinner"></span>Generating image...';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `Generate a CSS background style string for a dark fashion deal card. The background should feel like: "${prompt}". 
+          Respond ONLY with a valid CSS background property value (no property name, no semicolon, no quotes around the whole thing).
+          Use dark, rich radial-gradient or linear-gradient with deep dark navy/black tones as base, with subtle color pops. 
+          Example format: radial-gradient(ellipse at 70% 30%, #0c1b40 0%, #02050d 100%)
+          Only CSS gradient, no image URLs.`
+        }]
+      })
+    });
+    const data = await response.json();
+    const css = data.content?.[0]?.text?.trim();
+    if (css) {
+      document.getElementById('card-bg').style.background = css;
+      status.className = 'ai-status success';
+      status.textContent = '✓ Background applied';
+    } else {
+      throw new Error('No response');
+    }
+  } catch (e) {
+    status.className = 'ai-status error';
+    status.textContent = '✗ Error — try again';
+  }
+}
+
+// --- AI Model Generation ---
+async function generateModelAI() {
+  const prompt = document.getElementById('ai-model-prompt').value.trim();
+  if (!prompt) return;
+  const status = document.getElementById('ai-model-status');
+  status.className = 'ai-status loading';
+  status.innerHTML = '<span class="spinner"></span>Generating...';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `I need an SVG illustration as a placeholder for: "${prompt}"
+          Create a simple, clean SVG of fashion model silhouette(s) appropriate for a deal card.
+          The SVG should be 120x170px, transparent background, figures should fill the space.
+          Respond ONLY with the raw SVG code starting with <svg, nothing else.`
+        }]
+      })
+    });
+    const data = await response.json();
+    const svgCode = data.content?.[0]?.text?.trim();
+    if (svgCode && svgCode.startsWith('<svg')) {
+      const blob = new Blob([svgCode], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const img = document.getElementById('c-model-img');
+      img.src = url;
+      img.style.display = 'block';
+      status.className = 'ai-status success';
+      status.textContent = '✓ Illustration applied';
+    } else {
+      throw new Error('No SVG');
+    }
+  } catch (e) {
+    status.className = 'ai-status error';
+    status.textContent = '✗ Error — try again';
+  }
+}
+
+// --- BG Gradient ---
+function updateBgGradient() {
+  const c1 = document.getElementById('bg-color1').value;
+  const c2 = document.getElementById('bg-color2').value;
+  document.getElementById('bg-color1-hex').value = c1;
+  document.getElementById('bg-color2-hex').value = c2;
+  document.getElementById('card-bg').style.background = `radial-gradient(ellipse at 70% 40%, ${c1} 0%, ${c2} 100%)`;
+}
+
+// --- Logo Image Upload ---
+function loadLogoImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('c-logo-badge');
+    img.src = e.target.result;
+    const isOn = document.getElementById('logo-toggle').classList.contains('on');
+    img.style.display = isOn ? 'block' : 'none';
+    const thumb = document.getElementById('logo-thumb');
+    thumb.src = e.target.result;
+    thumb.style.display = 'block';
+    document.getElementById('logo-uz-icon').style.display = 'none';
+    document.getElementById('logo-uz-label').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+// --- Logo Toggle ---
+function toggleLogo() {
+  const toggle = document.getElementById('logo-toggle');
+  const logo = document.getElementById('c-logo-badge');
+  const fields = document.getElementById('logo-fields');
+  const isOn = toggle.classList.toggle('on');
+  if (isOn && logo.src && logo.src !== window.location.href) {
+    logo.style.display = 'block';
+  } else {
+    logo.style.display = 'none';
+  }
+  fields.style.display = isOn ? 'block' : 'none';
+}
+
+// --- CTA Toggle ---
+function toggleCTA() {
+  const toggle = document.getElementById('cta-toggle');
+  const cta = document.getElementById('c-cta');
+  const fields = document.getElementById('cta-fields');
+  const isOn = toggle.classList.toggle('on');
+  cta.style.display = isOn ? 'block' : 'none';
+  fields.style.display = isOn ? 'block' : 'none';
+}
+
+// --- Headline ---
+function updateHeadlineColor() {
+  const v = document.getElementById('headline-color').value;
+  document.getElementById('headline-color-hex').value = v;
+  document.getElementById('c-headline').style.color = v;
+}
+function updateHeadlineSize(v) {
+  document.getElementById('headline-size-val').textContent = v + 'px';
+  document.getElementById('c-headline').style.fontSize = v + 'px';
+}
+
+// --- Subhead ---
+function updateSubheadColor() {
+  const v = document.getElementById('subhead-color').value;
+  document.getElementById('subhead-color-hex').value = v;
+  document.getElementById('c-subhead').style.color = v;
+}
+
+// --- CK Badge ---
+function updateCKColor() {
+  const v = document.getElementById('ck-color').value;
+  document.getElementById('ck-color-hex').value = v;
+  document.getElementById('c-ck-badge').style.background = v;
+}
+
+// --- CTA ---
+function updateCTABg() {
+  const v = document.getElementById('cta-bg').value;
+  document.getElementById('cta-bg-hex').value = v;
+  document.getElementById('c-cta').style.background = v;
+}
+function updateCTAColor() {
+  const v = document.getElementById('cta-color').value;
+  document.getElementById('cta-color-hex').value = v;
+  document.getElementById('c-cta').style.color = v;
+}
+
+// --- Card Radius ---
+function updateCardRadius(v) {
+  document.getElementById('card-radius-val').textContent = v + 'px';
+  document.getElementById('card-preview').style.borderRadius = v + 'px';
+}
+
+// --- Model Size ---
+function updateModelSize(v) {
+  document.getElementById('model-size-val').textContent = v + '%';
+  document.getElementById('c-model-img').style.height = v + '%';
+}
+
+// --- Zoom ---
+function zoom(delta) {
+  zoomLevel = Math.max(0.5, Math.min(3, zoomLevel + delta));
+  applyZoom();
+}
+function zoomFit() { zoomLevel = 1; applyZoom(); }
+function applyZoom() {
+  document.getElementById('card-scale-wrap').style.transform = `scale(${zoomLevel})`;
+  document.getElementById('zoom-label').textContent = Math.round(zoomLevel * 100) + '%';
+}
+
+// --- Layer Focus (scroll panel to relevant section) ---
+const layerSectionMap = {
+  bg: 0, logo: 1, hero: 2, incentive: 3, model: 4, cta: 5
+};
+function focusLayer(name) {
+  document.querySelectorAll('.layer-item').forEach(i => i.classList.remove('active'));
+  const items = document.querySelectorAll('.layer-item');
+  if (layerSectionMap[name] !== undefined) items[layerSectionMap[name]].classList.add('active');
+  const sections = document.querySelectorAll('.panel-section');
+  const idx = layerSectionMap[name];
+  if (sections[idx]) sections[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// --- Export ---
+async function exportCard(scale = 1) {
+  const card = document.getElementById('card-preview');
+  const prevTransform = document.getElementById('card-scale-wrap').style.transform;
+  document.getElementById('card-scale-wrap').style.transform = 'scale(1)';
+  try {
+    const canvas = await html2canvas(card, {
+      scale: scale * 2,
+      useCORS: true,
+      backgroundColor: null,
+      width: 302,
+      height: 200
+    });
+    const link = document.createElement('a');
+    link.download = `ajio-deal-card${scale > 1 ? '@2x' : ''}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(e) { alert('Export failed: ' + e.message); }
+  document.getElementById('card-scale-wrap').style.transform = prevTransform;
+}
+function exportCard2x() { exportCard(2); }
+
+// --- Copy Config ---
+function copyCSS() {
+  const config = {
+    headline: document.getElementById('c-headline').innerHTML,
+    subhead: document.getElementById('c-subhead').innerHTML,
+    logo: document.getElementById('c-logo-badge').innerHTML,
+    cashback: document.getElementById('c-cashback-text').innerHTML,
+    cta: document.getElementById('c-cta').innerHTML,
+  };
+  navigator.clipboard.writeText(JSON.stringify(config, null, 2));
+  const btn = event.target;
+  btn.textContent = '✓ Copied!';
+  setTimeout(() => btn.textContent = '⎘ Copy Config', 1500);
+}
+
+// --- Reset ---
+function resetCard() {
+  if (!confirm('Reset all changes?')) return;
+  location.reload();
+}
+</script>
+</body>
+</html>
