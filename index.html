@@ -155,7 +155,7 @@
   #model-area {
     position: absolute;
     top: 14px; bottom: 46px; right: 0;
-    width: auto;
+    width: 145px;
     z-index: 3;
     pointer-events: none;
     display: flex; align-items: flex-start; justify-content: flex-end;
@@ -600,7 +600,13 @@ function makeDraggable(el) {
 /* ─── Model size sliders ─── */
 $('model-width-slider').addEventListener('input', e => {
   const val = parseInt(e.target.value);
-  $('model-area').style.width = (302 * val / 100).toFixed(0) + 'px';
+  const w = (302 * val / 100).toFixed(0) + 'px';
+  $('model-area').style.width = w;
+  const img = $('model-img-el');
+  if (img.style.display !== 'none') {
+    img.style.width = '100%';
+    img.style.maxWidth = w;
+  }
   $('model-width-val').textContent = val + '%';
 });
 $('model-right-slider').addEventListener('input', e => {
@@ -608,7 +614,7 @@ $('model-right-slider').addEventListener('input', e => {
   $('model-area').style.right = val + 'px';
   $('model-right-val').textContent = val + 'px';
 });
-(function() { $('model-area').style.width = (302 * 48 / 100).toFixed(0) + 'px'; })();
+(function() { $('model-area').style.width = '145px'; })();
 
 /* ─── Background gradient color pickers ─── */
 function updateBgGradient() {
