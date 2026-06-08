@@ -448,6 +448,19 @@
       <p class="hint" style="margin-bottom:12px;">PNG with transparent bg recommended</p>
       <div style="border-top:1px solid var(--border);padding-top:12px;">
         <div style="font-size:11px;color:var(--text3);margin-bottom:6px;display:flex;align-items:center;gap:4px;"><i class="ti ti-sparkles" style="font-size:12px;color:#a78bfa;"></i> AI Generate Hero Image</div>
+        <!-- Product image upload for D2C brands -->
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+            <span style="font-size:11px;color:var(--text2);font-weight:600;">Product Image <span style="color:var(--text3);font-weight:400;">(D2C brands)</span></span>
+            <span id="product-img-status" style="font-size:10px;color:#4ade80;display:none;">✓ Uploaded</span>
+          </div>
+          <div class="upload-zone" style="padding:8px;">
+            <input type="file" id="product-img-upload" accept="image/*" />
+            <i class="ti ti-package" style="font-size:16px;color:var(--text3);display:block;margin-bottom:2px;"></i>
+            <div class="uz-text" style="font-size:11px;">Upload actual product PNG <span style="color:var(--text3);">(white/transparent bg)</span></div>
+          </div>
+          <p style="font-size:10px;color:var(--text3);margin-top:4px;">When uploaded, AI places your real product into the scene instead of hallucinating it.</p>
+        </div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
           <span style="font-size:11px;color:var(--text3);">Auto-filled from Brand · Discount · Category</span>
           <button id="refresh-prompt-btn" title="Regenerate prompt" style="background:none;border:none;cursor:pointer;padding:2px;color:var(--text3);font-size:13px;line-height:1;" onclick="autoFillModelPrompt()"><i class="ti ti-refresh"></i></button>
@@ -602,7 +615,7 @@ function updateBgGradient() {
 $('bg-glow-color').addEventListener('input', updateBgGradient);
 $('bg-edge-color').addEventListener('input', updateBgGradient);
 
-/* ─── GPT-image-1: helper ─── */
+/* ─── GPT-image-1: generate from prompt only ─── */
 async function generateImage(prompt, size) {
   const res = await fetch('https://api.openai.com/v1/images/generations', {
     method: 'POST',
@@ -613,6 +626,45 @@ async function generateImage(prompt, size) {
   if (!res.ok) throw new Error(data.error?.message || 'API error');
   return 'data:image/png;base64,' + data.data[0].b64_json;
 }
+
+/* ─── GPT-image-1: edit — composite real product into scene ─── */
+async function editImageWithProduct(productBase64, prompt) {
+  // Convert base64 to blob for FormData
+  const byteStr = atob(productBase64.split(',')[1]);
+  const ab = new ArrayBuffer(byteStr.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
+  const blob = new Blob([ab], { type: 'image/png' });
+
+  const form = new FormData();
+  form.append('model', 'gpt-image-1');
+  form.append('image', blob, 'product.png');
+  form.append('prompt', prompt);
+  form.append('n', '1');
+  form.append('size', '1024x1024');
+
+  const res = await fetch('https://api.openai.com/v1/images/edits', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${getKey()}` },
+    body: form
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || 'API error');
+  return 'data:image/png;base64,' + data.data[0].b64_json;
+}
+
+/* ─── Product image upload handler ─── */
+let productImageBase64 = null;
+$('product-img-upload').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    productImageBase64 = ev.target.result;
+    $('product-img-status').style.display = 'inline';
+  };
+  reader.readAsDataURL(file);
+});
 
 /* ─── Generate Background ─── */
 $('bg-gen-btn').addEventListener('click', async () => {
@@ -647,11 +699,21 @@ $('model-gen-btn').addEventListener('click', async () => {
   const label = $('model-gen-label');
   const errEl = $('model-gen-error');
   errEl.style.display = 'none';
-  label.textContent = 'Generating…';
   $('model-gen-btn').disabled = true;
+
   try {
-    const fullPrompt = `Editorial lifestyle model image for a fashion/deals app banner. ${prompt}. Real human photography, aspirational, clean dark or navy background. IMPORTANT: full upper body visible from head to hip, no cropping of head or shoulders. Subject positioned on the right side, looking slightly left. Portrait aspect ratio, plenty of headroom above subject. No text, no logos.`;
-    const b64 = await generateImage(fullPrompt, '1024x1024');
+    let b64;
+    if (productImageBase64) {
+      // D2C path: use image edits API to place real product into scene
+      label.textContent = 'Placing product…';
+      const editPrompt = `Take this product and place it being held naturally by an aspirational lifestyle model. ${prompt}. Editorial photography style, dark navy background, real human, full upper body head to hip visible, no cropping of head. Subject on right side looking slightly left. No hallucinated products — use only the uploaded product. No text, no logos.`;
+      b64 = await editImageWithProduct(productImageBase64, editPrompt);
+    } else {
+      // Marketplace path: generate from prompt
+      label.textContent = 'Generating…';
+      const fullPrompt = `Editorial lifestyle model image for a fashion/deals app banner. ${prompt}. Real human photography, aspirational, clean dark or navy background. IMPORTANT: full upper body visible from head to hip, no cropping of head or shoulders. Subject positioned on the right side, looking slightly left. Portrait aspect ratio, plenty of headroom above subject. No text, no logos.`;
+      b64 = await generateImage(fullPrompt, '1024x1024');
+    }
     const img = $('model-img-el');
     img.src = b64;
     img.style.display = 'block';
