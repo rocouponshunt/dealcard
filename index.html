@@ -173,7 +173,7 @@
   }
   .model-ph i { font-size: 24px; color: rgba(255,255,255,0.18); }
   .model-ph span { font-size: 8px; color: rgba(255,255,255,0.25); text-align: center; padding: 0 8px; }
-  #model-img-el { width: 100%; height: 100%; object-fit: contain; object-position: bottom right; display: none; }
+  #model-img-el { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: none; }
 
   /* drag selection ring */
   .card-el:active { outline: 1.5px dashed rgba(255,255,255,0.4); outline-offset: 2px; border-radius: 4px; }
@@ -542,10 +542,10 @@ $('img-upload').addEventListener('change', e => {
     const img = $('model-img-el');
     img.src = ev.target.result;
     img.style.display = 'block';
-    img.style.width = 'auto';
+    img.style.width = '100%';
     img.style.height = '100%';
-    img.style.objectFit = 'contain';
-    img.style.objectPosition = 'right top';
+    img.style.objectFit = 'cover';
+    img.style.objectPosition = 'top center';
     $('model-ph').style.display = 'none';
   };
   reader.readAsDataURL(file);
@@ -716,16 +716,16 @@ $('model-gen-btn').addEventListener('click', async () => {
     } else {
       // Marketplace path: generate from prompt
       label.textContent = 'Generating…';
-      const fullPrompt = `Editorial lifestyle model for a fashion deals app card. ${prompt}. Dark navy background. Full body from top of head to knees fully visible — critical: do NOT crop the head or shoulders. Model standing on the right side of frame, facing slightly left. Plenty of clear space above the head. Aspirational real human photography. Transparent or very dark edges so subject blends into dark card. No text, no logos, no props other than fashion items.`;
-      b64 = await generateImage(fullPrompt, '1024x1536');
+      const fullPrompt = `Two aspirational lifestyle models for a fashion deals app card. ${prompt}. Both models standing close together filling the full width of the frame — no empty space on sides. Full upper body visible from head to hip, do NOT crop heads or shoulders. Models positioned on the right half of the composition, facing slightly inward. Editorial photography, dark navy or matching background. Wide horizontal composition, subjects fill the frame shoulder to shoulder. No text, no logos.`;
+      b64 = await generateImage(fullPrompt, '1024x1024');
     }
     const img = $('model-img-el');
     img.src = b64;
     img.style.display = 'block';
-    img.style.width = 'auto';
+    img.style.width = '100%';
     img.style.height = '100%';
-    img.style.objectFit = 'contain';
-    img.style.objectPosition = 'right top';
+    img.style.objectFit = 'cover';
+    img.style.objectPosition = 'top center';
     $('model-ph').style.display = 'none';
   } catch(e) {
     errEl.textContent = e.message;
