@@ -151,18 +151,6 @@
     white-space: nowrap;
   }
 
-  #el-cta {
-    background: #fff;
-    color: #0036DA;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 8px 16px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    z-index: 5;
-    bottom: 12px; right: 12px;
-    white-space: nowrap;
-  }
 
   #model-area {
     position: absolute;
@@ -331,10 +319,6 @@
           <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:3px;">Cashback text</div>
           <input type="text" id="in-cashback" value="Upto 7% Cashback" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;padding:5px 8px;font-family:inherit;outline:none;" />
         </div>
-        <div id="cta-label-field" style="display:none;">
-          <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:3px;">CTA Label</div>
-          <input type="text" id="in-cta" value="Grab Deal" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;padding:5px 8px;font-family:inherit;outline:none;" />
-        </div>
       </div>
     </div>
 
@@ -363,8 +347,6 @@
         <span class="ck-text" id="txt-cashback">Upto 7% Cashback</span>
       </div>
 
-      <!-- CTA -->
-      <div class="card-el" id="el-cta" style="display:none;"><span id="txt-cta">Grab Deal</span></div>
 
       <!-- Model image -->
       <div id="model-area">
@@ -384,111 +366,74 @@
   <!-- ── Edit Panel ── -->
   <div class="edit-panel">
 
-    <!-- Background -->
+    <!-- API Key -->
     <div class="section">
-      <div class="section-title">Background</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+        <i class="ti ti-key" style="font-size:13px;color:var(--text3);"></i>
+        <span style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);">OpenAI API Key</span>
+      </div>
+      <input type="password" id="openai-key" placeholder="sk-..." style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;padding:7px 10px;font-family:inherit;outline:none;" />
+      <p style="font-size:11px;color:var(--text3);margin-top:5px;">Required for AI generation. Not stored anywhere.</p>
+    </div>
+
+    <!-- Background AI -->
+    <div class="section">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;" id="bg-toggle-row">
+        <div class="section-title" style="margin-bottom:0;">Background</div>
+        <i class="ti ti-chevron-down" id="bg-chevron" style="font-size:14px;color:var(--text3);transition:transform 0.2s;"></i>
+      </div>
+      <div id="bg-collapsed" style="display:none;margin-top:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <span style="font-size:12px;color:var(--text2);">Glow color</span>
         <div style="display:flex;align-items:center;gap:8px;">
           <input type="color" id="bg-glow-color" value="#0c1b40" style="width:36px;height:26px;border:1px solid var(--border2);border-radius:5px;background:none;cursor:pointer;padding:2px;" />
           <span style="font-size:11px;color:var(--text3);">Centre</span>
         </div>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
         <span style="font-size:12px;color:var(--text2);">Edge color</span>
         <div style="display:flex;align-items:center;gap:8px;">
           <input type="color" id="bg-edge-color" value="#02050d" style="width:36px;height:26px;border:1px solid var(--border2);border-radius:5px;background:none;cursor:pointer;padding:2px;" />
           <span style="font-size:11px;color:var(--text3);">Outer</span>
         </div>
       </div>
+      <div style="border-top:1px solid var(--border);padding-top:12px;">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;display:flex;align-items:center;gap:4px;"><i class="ti ti-sparkles" style="font-size:12px;color:#a78bfa;"></i> AI Generate Background</div>
+        <textarea id="bg-prompt" placeholder="e.g. Dark navy blue with soft radial glow, fashion editorial mood" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;padding:7px 10px;font-family:inherit;resize:none;height:60px;outline:none;line-height:1.4;"></textarea>
+        <button id="bg-gen-btn" style="margin-top:8px;width:100%;padding:8px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:6px;color:#c4b5fd;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;">
+          <i class="ti ti-wand" style="font-size:13px;"></i> <span id="bg-gen-label">Generate Background</span>
+        </button>
+        <p id="bg-gen-error" style="font-size:11px;color:#f87171;margin-top:4px;display:none;"></p>
+      </div>
+      </div><!-- end bg-collapsed -->
     </div>
 
-    <!-- Visibility -->
+    <!-- Sale Badge Toggle + Upload -->
     <div class="section">
       <div class="section-title">Visibility</div>
-
-      <div class="tog-row">
-        <div class="tog-info">
-          <span class="tog-name">Brand Logo</span>
-          <span class="tog-sub">White "AJIO" pill</span>
-        </div>
-        <label class="toggle"><input type="checkbox" id="tog-logo" /><span class="tslider"></span></label>
-      </div>
-
-      <div class="tog-row">
+      <div class="tog-row" style="margin-bottom:0;">
         <div class="tog-info">
           <span class="tog-name">Sale Badge</span>
           <span class="tog-sub">Circular campaign badge</span>
         </div>
         <label class="toggle"><input type="checkbox" id="tog-badge" /><span class="tslider"></span></label>
       </div>
-
-      <div class="tog-row">
-        <div class="tog-info">
-          <span class="tog-name">CTA Button</span>
-          <span class="tog-sub">"Grab Deal" button</span>
-        </div>
-        <label class="toggle"><input type="checkbox" id="tog-cta" /><span class="tslider"></span></label>
-      </div>
-
-      <div class="tog-row">
-        <div class="tog-info">
-          <span class="tog-name">Cashback Strip</span>
-          <span class="tog-sub">Bottom-left pill</span>
-        </div>
-        <label class="toggle"><input type="checkbox" id="tog-cashback" checked /><span class="tslider"></span></label>
-      </div>
     </div>
 
     <!-- Sale Badge Upload -->
     <div class="section" id="badge-upload-section" style="display:none;">
       <div class="section-title">Sale Badge Image</div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">Replace the default badge with a custom image (circular PNG recommended)</p>
-      <div class="upload-zone" id="badge-upload-zone">
+      <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">Circular PNG recommended</p>
+      <div class="upload-zone">
         <input type="file" id="badge-img-upload" accept="image/*" />
         <i class="ti ti-badge-cc"></i>
         <div class="uz-text"><strong>Click to upload</strong> badge image</div>
       </div>
-      <p class="hint">Circular PNG with transparent bg works best</p>
     </div>
 
-    <!-- Cashback Position -->
-    <div class="section">
-      <div class="section-title">Cashback Strip Position</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <span style="font-size:12px;color:var(--text2);">Vertical position</span>
-        <span style="font-size:12px;font-weight:600;color:var(--text);" id="cb-pos-val">46px from bottom (fixed)</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="font-size:11px;color:var(--text3);">Top</span>
-        <input type="range" id="cb-pos-slider" min="46" max="46" value="46" step="1" style="flex:1;opacity:0.4;pointer-events:none;" />
-        <span style="font-size:11px;color:var(--text3);">Bottom</span>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin:12px 0 8px;">
-        <span style="font-size:12px;color:var(--text2);">Horizontal position</span>
-        <span style="font-size:12px;font-weight:600;color:var(--text);" id="cb-left-val">10px from left</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="font-size:11px;color:var(--text3);">Left</span>
-        <input type="range" id="cb-left-slider" min="0" max="240" value="10" step="1" style="flex:1;" />
-        <span style="font-size:11px;color:var(--text3);">Right</span>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin:12px 0 8px;">
-        <span style="font-size:12px;color:var(--text2);">Gradient start color</span>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <input type="range" id="cb-grad-opacity" min="0" max="40" value="15" step="1" style="width:80px;" />
-          <span style="font-size:12px;font-weight:600;color:var(--text);" id="cb-grad-val">15%</span>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <div style="font-size:11px;color:var(--text3);white-space:nowrap;">Color</div>
-        <input type="color" id="cb-grad-color" value="#ffffff" style="width:36px;height:26px;border:1px solid var(--border2);border-radius:5px;background:none;cursor:pointer;padding:2px;" />
-        <span style="font-size:11px;color:var(--text3);">Opacity controls fade intensity</span>
-      </div>
-      <p style="font-size:11px;color:var(--text3);margin-top:6px;">Drag sliders — or drag the strip on the card directly</p>
-    </div>
 
-    <!-- Model Image Upload -->
+
+    <!-- Model / Hero Image -->
     <div class="section">
       <div class="section-title">Model / Hero Image</div>
       <div class="upload-zone">
@@ -496,8 +441,16 @@
         <i class="ti ti-photo-up"></i>
         <div class="uz-text"><strong>Click to upload</strong> or drag & drop</div>
       </div>
-      <p class="hint">PNG with transparent background recommended</p>
-      <div style="margin-top:14px;">
+      <p class="hint" style="margin-bottom:12px;">PNG with transparent bg recommended</p>
+      <div style="border-top:1px solid var(--border);padding-top:12px;">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;display:flex;align-items:center;gap:4px;"><i class="ti ti-sparkles" style="font-size:12px;color:#a78bfa;"></i> AI Generate Hero Image</div>
+        <textarea id="model-prompt" placeholder="e.g. Two fashionable men in linen shirts, editorial lifestyle, transparent background" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;padding:7px 10px;font-family:inherit;resize:none;height:60px;outline:none;line-height:1.4;"></textarea>
+        <button id="model-gen-btn" style="margin-top:8px;width:100%;padding:8px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:6px;color:#c4b5fd;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;">
+          <i class="ti ti-wand" style="font-size:13px;"></i> <span id="model-gen-label">Generate Image</span>
+        </button>
+        <p id="model-gen-error" style="font-size:11px;color:#f87171;margin-top:4px;display:none;"></p>
+      </div>
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
           <span style="font-size:12px;color:var(--text2);">Width</span>
           <span style="font-size:12px;font-weight:600;color:var(--text);" id="model-width-val">48%</span>
@@ -507,7 +460,7 @@
           <input type="range" id="model-width-slider" min="20" max="100" value="48" step="1" style="flex:1;" />
           <span style="font-size:11px;color:var(--text3);">Wide</span>
         </div>
-        <div style="margin-top:12px;">
+        <div style="margin-top:10px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
             <span style="font-size:12px;color:var(--text2);">Right offset</span>
             <span style="font-size:12px;font-weight:600;color:var(--text);" id="model-right-val">0px</span>
@@ -517,7 +470,6 @@
             <input type="range" id="model-right-slider" min="0" max="117" value="0" step="1" style="flex:1;" />
             <span style="font-size:11px;color:var(--text3);">117px</span>
           </div>
-          <p style="font-size:11px;color:var(--text3);margin-top:4px;">Top locked 18px · Bottom locked 46px</p>
         </div>
       </div>
     </div>
@@ -528,6 +480,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 const $ = id => document.getElementById(id);
+const getKey = () => $('openai-key').value.trim();
 
 /* ─── Text bindings ─── */
 function bindText(inputId, targetId) {
@@ -536,26 +489,12 @@ function bindText(inputId, targetId) {
 bindText('in-discount', 'txt-discount');
 bindText('in-category', 'txt-category');
 bindText('in-cashback', 'txt-cashback');
-bindText('in-cta',      'txt-cta');
 
-/* ─── Toggles ─── */
-function bindToggle(checkId, elId) {
-  $(checkId).addEventListener('change', e => {
-    $(elId).style.display = e.target.checked ? '' : 'none';
-  });
-}
-bindToggle('tog-logo',     'el-logo');
+/* ─── Sale Badge toggle ─── */
 $('tog-badge').addEventListener('change', e => {
   const on = e.target.checked;
   $('el-badge').style.display = on ? '' : 'none';
   $('badge-upload-section').style.display = on ? '' : 'none';
-});
-bindToggle('tog-cashback', 'el-cashback');
-
-$('tog-cta').addEventListener('change', e => {
-  const on = e.target.checked;
-  $('el-cta').style.display = on ? '' : 'none';
-  $('cta-label-field').style.display = on ? '' : 'none';
 });
 
 /* ─── Model image upload ─── */
@@ -590,73 +529,39 @@ $('badge-img-upload').addEventListener('change', e => {
   reader.readAsDataURL(file);
 });
 
-/* ─── Drag to reposition ─── */
-function makeDraggable(el, onMove) {
+/* ─── Draggable: only Sale Badge ─── */
+function makeDraggable(el) {
   el.addEventListener('mousedown', e => {
     e.preventDefault();
     const card = $('card');
-    const cr   = card.getBoundingClientRect();
-    const er   = el.getBoundingClientRect();
-    const cs   = getComputedStyle(el);
-    const isRight  = cs.right  !== 'auto' && cs.left === 'auto';
-    const isBottom = cs.bottom !== 'auto' && cs.top  === 'auto';
+    const cr = card.getBoundingClientRect();
+    const er = el.getBoundingClientRect();
+    const cs = getComputedStyle(el);
+    const isRight  = cs.right !== 'auto' && cs.left === 'auto';
+    const isBottom = cs.bottom !== 'auto' && cs.top === 'auto';
     const sx = e.clientX, sy = e.clientY;
     const ox = isRight  ? cr.right  - er.right  : er.left - cr.left;
     const oy = isBottom ? cr.bottom - er.bottom : er.top  - cr.top;
-
     function move(ev) {
       const dx = ev.clientX - sx, dy = ev.clientY - sy;
-      if (isRight) {
-        let r = Math.max(0, Math.min(cr.width  - er.width,  ox - dx));
-        el.style.right = r + 'px'; el.style.left = 'auto';
-      } else {
-        let l = Math.max(0, Math.min(cr.width  - er.width,  ox + dx));
-        el.style.left = l + 'px'; el.style.right = 'auto';
-      }
-      if (isBottom) {
-        let b = Math.max(0, Math.min(cr.height - er.height, oy - dy));
-        el.style.bottom = b + 'px'; el.style.top = 'auto';
-      } else {
-        let t = Math.max(0, Math.min(cr.height - er.height, oy + dy));
-        el.style.top = t + 'px'; el.style.bottom = 'auto';
-      }
-      if (onMove) onMove(el);
+      if (isRight) { let r = Math.max(0, Math.min(cr.width - er.width, ox - dx)); el.style.right = r+'px'; el.style.left='auto'; }
+      else         { let l = Math.max(0, Math.min(cr.width - er.width, ox + dx)); el.style.left  = l+'px'; el.style.right='auto'; }
+      if (isBottom) { let b = Math.max(0, Math.min(cr.height - er.height, oy - dy)); el.style.bottom = b+'px'; el.style.top='auto'; }
+      else          { let t = Math.max(0, Math.min(cr.height - er.height, oy + dy)); el.style.top    = t+'px'; el.style.bottom='auto'; }
     }
-    function up() {
-      document.removeEventListener('mousemove', move);
-      document.removeEventListener('mouseup', up);
-    }
+    function up() { document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', up); }
     document.addEventListener('mousemove', move);
     document.addEventListener('mouseup', up);
   });
 }
+['el-badge'].forEach(id => { const el = $(id); if (el) makeDraggable(el); });
 
-['el-logo','el-badge','el-cta'].forEach(id => {
-  const el = $(id);
-  if (el) makeDraggable(el);
-});
-/* cashback: horizontal only via slider, vertical locked to 46px */
 
-/* ─── Cashback vertical slider — locked, display only ─── */
-$('cb-pos-slider').addEventListener('input', e => {
-  /* vertical is fixed at 46px — slider is read-only display */
-  $('cb-pos-slider').value = 46;
-  $('cb-pos-val').textContent = '46px from bottom';
-});
 
-$('cb-left-slider').addEventListener('input', e => {
-  const val = parseInt(e.target.value);
-  const el  = $('el-cashback');
-  el.style.left  = val + 'px';
-  el.style.right = 'auto';
-  $('cb-left-val').textContent = val + 'px from left';
-});
-
-/* ─── Model image size sliders ─── */
+/* ─── Model size sliders ─── */
 $('model-width-slider').addEventListener('input', e => {
   const val = parseInt(e.target.value);
-  const w   = (302 * val / 100).toFixed(0) + 'px';
-  $('model-area').style.width = w;
+  $('model-area').style.width = (302 * val / 100).toFixed(0) + 'px';
   $('model-width-val').textContent = val + '%';
 });
 $('model-right-slider').addEventListener('input', e => {
@@ -664,43 +569,92 @@ $('model-right-slider').addEventListener('input', e => {
   $('model-area').style.right = val + 'px';
   $('model-right-val').textContent = val + 'px';
 });
+(function() { $('model-area').style.width = (302 * 48 / 100).toFixed(0) + 'px'; })();
 
-/* ─── Cashback gradient color ─── */
-function updateCbGradient() {
-  const hex = $('cb-grad-color').value;
-  const op  = parseInt($('cb-grad-opacity').value) / 100;
-  const r = parseInt(hex.slice(1,3),16);
-  const g = parseInt(hex.slice(3,5),16);
-  const b = parseInt(hex.slice(5,7),16);
-  $('el-cashback').style.background = `linear-gradient(90deg, rgba(${r},${g},${b},${op}) 0%, rgba(${r},${g},${b},0) 100%)`;
-}
-$('cb-grad-color').addEventListener('input', () => { updateCbGradient(); });
-$('cb-grad-opacity').addEventListener('input', e => {
-  $('cb-grad-val').textContent = e.target.value + '%';
-  updateCbGradient();
-});
-
-/* ─── Init model area width ─── */
-(function() {
-  const w = (302 * 48 / 100).toFixed(0) + 'px';
-  $('model-area').style.width = w;
-})();
-
-/* ─── Background gradient ─── */
+/* ─── Background gradient color pickers ─── */
 function updateBgGradient() {
-  const glow = $('bg-glow-color').value;
-  const edge = $('bg-edge-color').value;
-  $('card').style.background = `radial-gradient(ellipse at 70% 40%, ${glow} 0%, ${edge} 100%)`;
+  $('card').style.background = `radial-gradient(ellipse at 70% 40%, ${$('bg-glow-color').value} 0%, ${$('bg-edge-color').value} 100%)`;
 }
 $('bg-glow-color').addEventListener('input', updateBgGradient);
 $('bg-edge-color').addEventListener('input', updateBgGradient);
 
+/* ─── GPT-image-1: helper ─── */
+async function generateImage(prompt, size) {
+  const res = await fetch('https://api.openai.com/v1/images/generations', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getKey()}` },
+    body: JSON.stringify({ model: 'gpt-image-1', prompt, n: 1, size: size || '1024x1024', output_format: 'png' })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || 'API error');
+  return 'data:image/png;base64,' + data.data[0].b64_json;
+}
+
+/* ─── Generate Background ─── */
+$('bg-gen-btn').addEventListener('click', async () => {
+  const prompt = $('bg-prompt').value.trim();
+  if (!getKey()) { $('bg-gen-error').textContent = 'Enter your OpenAI API key above first.'; $('bg-gen-error').style.display='block'; return; }
+  if (!prompt) return;
+  const label = $('bg-gen-label');
+  const errEl = $('bg-gen-error');
+  errEl.style.display = 'none';
+  label.textContent = 'Generating…';
+  $('bg-gen-btn').disabled = true;
+  try {
+    const fullPrompt = `A seamless banner background for a mobile app deal card, 302x200px landscape. ${prompt}. No text, no people, no logos. Abstract or atmospheric. Suitable as a dark card background.`;
+    const b64 = await generateImage(fullPrompt, '1024x1024');
+    $('card').style.backgroundImage = `url(${b64})`;
+    $('card').style.backgroundSize = 'cover';
+    $('card').style.backgroundPosition = 'center';
+  } catch(e) {
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  } finally {
+    label.textContent = 'Generate Background';
+    $('bg-gen-btn').disabled = false;
+  }
+});
+
+/* ─── Generate Hero Image ─── */
+$('model-gen-btn').addEventListener('click', async () => {
+  const prompt = $('model-prompt').value.trim();
+  if (!getKey()) { $('model-gen-error').textContent = 'Enter your OpenAI API key above first.'; $('model-gen-error').style.display='block'; return; }
+  if (!prompt) return;
+  const label = $('model-gen-label');
+  const errEl = $('model-gen-error');
+  errEl.style.display = 'none';
+  label.textContent = 'Generating…';
+  $('model-gen-btn').disabled = true;
+  try {
+    const fullPrompt = `Editorial lifestyle product or model image for a fashion/deals app banner. ${prompt}. Real human photography style, aspirational, clean. Transparent or very dark background so subject stands out. Portrait orientation, subject centered.`;
+    const b64 = await generateImage(fullPrompt, '1024x1024');
+    const img = $('model-img-el');
+    img.src = b64;
+    img.style.display = 'block';
+    $('model-ph').style.display = 'none';
+  } catch(e) {
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  } finally {
+    label.textContent = 'Generate Image';
+    $('model-gen-btn').disabled = false;
+  }
+});
+
+/* ─── Background section collapse ─── */
+$('bg-toggle-row').addEventListener('click', () => {
+  const panel = $('bg-collapsed');
+  const chev  = $('bg-chevron');
+  const open  = panel.style.display === 'none';
+  panel.style.display = open ? 'block' : 'none';
+  chev.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+});
+
 /* ─── Download PNG ─── */
 $('dl-btn').addEventListener('click', () => {
-  const card = $('card');
-  html2canvas(card, { scale: 3, useCORS: true, backgroundColor: null }).then(canvas => {
+  html2canvas($('card'), { scale: 3, useCORS: true, backgroundColor: null }).then(canvas => {
     const a = document.createElement('a');
-    a.download = 'ajio-card.png';
+    a.download = 'deal-card.png';
     a.href = canvas.toDataURL('image/png');
     a.click();
   });
