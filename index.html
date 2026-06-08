@@ -467,7 +467,7 @@
         </div>
         <textarea id="model-prompt" placeholder="Fill Brand, Discount and Category above to auto-generate..." style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;padding:7px 10px;font-family:inherit;resize:none;height:60px;outline:none;line-height:1.4;"></textarea>
         <button id="model-gen-btn" style="margin-top:8px;width:100%;padding:8px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:6px;color:#c4b5fd;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;">
-          <i class="ti ti-wand" style="font-size:13px;"></i> <span id="model-gen-label">Generate Image</span>
+          <i class="ti ti-wand" style="font-size:13px;"></i> <span id="model-gen-label">Generate Image</span> <span id="d2c-mode-hint" style="display:none;font-size:10px;color:#4ade80;margin-left:4px;">· D2C: uses upload directly</span>
         </button>
         <p id="model-gen-error" style="font-size:11px;color:#f87171;margin-top:4px;display:none;"></p>
       </div>
@@ -664,6 +664,8 @@ $('product-img-upload').addEventListener('change', e => {
   reader.onload = ev => {
     productImageBase64 = ev.target.result;
     $('product-img-status').style.display = 'inline';
+    $('d2c-mode-hint').style.display = 'inline';
+    $('model-gen-label').textContent = 'Place Product on Card';
   };
   reader.readAsDataURL(file);
 });
@@ -706,10 +708,9 @@ $('model-gen-btn').addEventListener('click', async () => {
   try {
     let b64;
     if (productImageBase64) {
-      // D2C path: use image edits API to place real product into scene
-      label.textContent = 'Placing product…';
-      const editPrompt = `Use ONLY the exact product shown in the uploaded image — do not change it, replace it, or invent a different product. Place this exact product being held by a real lifestyle model. Dark navy or near-black background, fully transparent around subject edges. Full upper body of model visible from top of head to waist — do not crop the head. Model on right half of frame looking slightly left. Aspirational editorial style. ${prompt}. No text overlays, no logos, no additional products.`;
-      b64 = await editImageWithProduct(productImageBase64, editPrompt);
+      // D2C path: use the uploaded product image directly — no hallucination, no API call
+      label.textContent = 'Using product image…';
+      b64 = productImageBase64;
     } else {
       // Marketplace path: generate from prompt
       label.textContent = 'Generating…';
