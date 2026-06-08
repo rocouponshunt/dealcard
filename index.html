@@ -154,7 +154,7 @@
 
   #model-area {
     position: absolute;
-    top: 18px; bottom: 78px; right: 0;
+    top: 14px; bottom: 46px; right: 0;
     width: auto;
     z-index: 3;
     pointer-events: none;
@@ -172,7 +172,7 @@
   }
   .model-ph i { font-size: 24px; color: rgba(255,255,255,0.18); }
   .model-ph span { font-size: 8px; color: rgba(255,255,255,0.25); text-align: center; padding: 0 8px; }
-  #model-img-el { width: 100%; height: 100%; object-fit: contain; object-position: top right; display: none; }
+  #model-img-el { width: auto; height: 100%; max-height: 100%; object-fit: contain; object-position: right top; display: none; }
 
   /* drag selection ring */
   .card-el:active { outline: 1.5px dashed rgba(255,255,255,0.4); outline-offset: 2px; border-radius: 4px; }
@@ -541,8 +541,10 @@ $('img-upload').addEventListener('change', e => {
     const img = $('model-img-el');
     img.src = ev.target.result;
     img.style.display = 'block';
+    img.style.width = 'auto';
+    img.style.height = '100%';
     img.style.objectFit = 'contain';
-    img.style.objectPosition = 'top right';
+    img.style.objectPosition = 'right top';
     $('model-ph').style.display = 'none';
   };
   reader.readAsDataURL(file);
@@ -706,19 +708,21 @@ $('model-gen-btn').addEventListener('click', async () => {
     if (productImageBase64) {
       // D2C path: use image edits API to place real product into scene
       label.textContent = 'Placing product…';
-      const editPrompt = `Take this product and place it being held naturally by an aspirational lifestyle model. ${prompt}. Editorial photography style, dark navy background, real human, full upper body head to hip visible, no cropping of head. Subject on right side looking slightly left. No hallucinated products — use only the uploaded product. No text, no logos.`;
+      const editPrompt = `Use ONLY the exact product shown in the uploaded image — do not change it, replace it, or invent a different product. Place this exact product being held by a real lifestyle model. Dark navy or near-black background, fully transparent around subject edges. Full upper body of model visible from top of head to waist — do not crop the head. Model on right half of frame looking slightly left. Aspirational editorial style. ${prompt}. No text overlays, no logos, no additional products.`;
       b64 = await editImageWithProduct(productImageBase64, editPrompt);
     } else {
       // Marketplace path: generate from prompt
       label.textContent = 'Generating…';
-      const fullPrompt = `Editorial lifestyle model image for a fashion/deals app banner. ${prompt}. Real human photography, aspirational, clean dark or navy background. IMPORTANT: full upper body visible from head to hip, no cropping of head or shoulders. Subject positioned on the right side, looking slightly left. Portrait aspect ratio, plenty of headroom above subject. No text, no logos.`;
-      b64 = await generateImage(fullPrompt, '1024x1024');
+      const fullPrompt = `Editorial lifestyle model for a fashion deals app card. ${prompt}. Dark navy background. Full body from top of head to knees fully visible — critical: do NOT crop the head or shoulders. Model standing on the right side of frame, facing slightly left. Plenty of clear space above the head. Aspirational real human photography. Transparent or very dark edges so subject blends into dark card. No text, no logos, no props other than fashion items.`;
+      b64 = await generateImage(fullPrompt, '1024x1536');
     }
     const img = $('model-img-el');
     img.src = b64;
     img.style.display = 'block';
+    img.style.width = 'auto';
+    img.style.height = '100%';
     img.style.objectFit = 'contain';
-    img.style.objectPosition = 'top right';
+    img.style.objectPosition = 'right top';
     $('model-ph').style.display = 'none';
   } catch(e) {
     errEl.textContent = e.message;
