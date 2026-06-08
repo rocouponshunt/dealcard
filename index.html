@@ -109,7 +109,7 @@
     border-radius: 8px;
     z-index: 4;
     white-space: nowrap;
-    top: 12px; left: 12px;
+    top: 12px; left: 10px;
   }
 
   #el-badge {
@@ -130,9 +130,9 @@
   #el-badge .badge-inner .b2 { font-size: 4.5px; font-weight: 600; color: #4ade80; display: block; margin-top: 1px; white-space: nowrap; }
   #el-badge img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
-  #el-headline { z-index: 4; top: 76px; left: 12px; }
-  #el-headline h2 { color: #fff; font-size: 22px; font-weight: 700; line-height: 1.1; white-space: nowrap; }
-  #el-headline p  { color: #E2E8F0; font-size: 13px; font-weight: 400; margin-top: 4px; white-space: nowrap; }
+  #el-headline { z-index: 4; top: 82px; left: 10px; cursor: default; }
+  #el-headline h2 { color: #fff; font-size: 16px; font-weight: 600; line-height: 1.1; white-space: nowrap; letter-spacing: 0; font-family: Metropolis, 'Segoe UI', system-ui, sans-serif; }
+  #el-headline p  { color: #E2E8F0; font-size: 12px; font-weight: 400; letter-spacing: -0.02em; margin-top: 7px; white-space: nowrap; font-family: Metropolis, 'Segoe UI', system-ui, sans-serif; }
 
   #el-cashback {
     z-index: 4;
@@ -141,18 +141,12 @@
     background: linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
     border-radius: 6px 0 0 6px;
     height: 28px;
-    bottom: 42px; left: 10px;
+    bottom: 46px; left: 10px;
   }
-  .ck-sq {
-    width: 28px; height: 28px;
-    background: #0036DA;
-    border-radius: 5px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700; color: #fff;
-    flex-shrink: 0;
-  }
+
   .ck-text {
-    font-size: 11px; font-weight: 600; color: #fff;
+    font-size: 14px; font-weight: 600; letter-spacing: 0; color: #fff;
+    font-family: Metropolis, 'Segoe UI', system-ui, sans-serif;
     margin-left: 8px; margin-right: 10px;
     white-space: nowrap;
   }
@@ -172,15 +166,16 @@
 
   #model-area {
     position: absolute;
-    bottom: 0; right: 0;
-    height: 75%;
+    top: 18px; bottom: 46px; right: 0;
+    width: auto;
     z-index: 3;
     pointer-events: none;
-    display: flex; align-items: flex-end; justify-content: flex-end;
+    display: flex; align-items: stretch; justify-content: flex-end;
+    overflow: hidden;
   }
   .model-ph {
     width: 120px; height: 100%;
-    border-radius: 8px 0 0 0;
+    border-radius: 4px 0 0 4px;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     gap: 4px;
@@ -189,7 +184,7 @@
   }
   .model-ph i { font-size: 24px; color: rgba(255,255,255,0.18); }
   .model-ph span { font-size: 8px; color: rgba(255,255,255,0.25); text-align: center; padding: 0 8px; }
-  #model-img-el { height: 100%; object-fit: cover; border-radius: 8px 0 0 0; display: none; }
+  #model-img-el { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 4px 0 0 4px; display: none; }
 
   /* drag selection ring */
   .card-el:active { outline: 1.5px dashed rgba(255,255,255,0.4); outline-offset: 2px; border-radius: 4px; }
@@ -357,14 +352,14 @@
       </div>
 
       <!-- Headline -->
-      <div class="card-el" id="el-headline">
+      <div id="el-headline" style="position:absolute;">
         <h2 id="txt-discount">50-90% Off</h2>
         <p id="txt-category">On Men's Fashion</p>
       </div>
 
       <!-- Cashback -->
-      <div class="card-el" id="el-cashback">
-        <div class="ck-sq">CK</div>
+      <div id="el-cashback" style="position:absolute;">
+        <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAgACADASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAACAQDAQf/xAApEAABAwQBAgYCAwAAAAAAAAABAgQFAAMGESEiMQcSE0FRkRQVFmGh/8QAFwEBAQEBAAAAAAAAAAAAAAAAAQIGB//EACYRAAEEAgAFBAMAAAAAAAAAAAECAwQRACEFIlFxgRIxQdFhkbH/2gAMAwEAAhEDEQA/APA4xg3j2qbFi2lOh1K1yo/JNVVq1SFubSFchSwD90mvFucwPHZ7IcAksTiG7SzFWhFX2rBP5H5Kkgp8y+4Gz3/rndd7kS0wFNx2WrsHQ1QBAP8ARmJbaL4U4tVd+pv6wwVLKMbEg0XYvoB2OlWuUn2IpfeKGN4/hf8AJM8cQcWm0qLbx0Q2U1R6anK09Vzya1sAd9exomHk7qeHz2uMMKPo5NA3u7FkeL/fbF9lUVY3vNGqghzaWrslYJ+6TnitB4NkM3kPiHJ5PDOmV6It/qm9h+A4DkJSE+ZA5PI7feqKkW+sSDRF+wsHY6k75SfcGqqqTETPLchl2qB2PkEg+PYYNulgKbWm+/UX94sc/wAtxjMn+R4G9yCLLBxE2HcU9U6R6Nl3bTyjz70N8f780T1DRI+K5Usm/bx7Vd+/cSnQ6U75UfgCpgQGeDsq5+SgTegCBRPnV/nF99cpY1vP/9k=" style="width:28px;height:28px;border-radius:5px;flex-shrink:0;display:block;" />
         <span class="ck-text" id="txt-cashback">Upto 7% Cashback</span>
       </div>
 
@@ -388,6 +383,25 @@
 
   <!-- ── Edit Panel ── -->
   <div class="edit-panel">
+
+    <!-- Background -->
+    <div class="section">
+      <div class="section-title">Background</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <span style="font-size:12px;color:var(--text2);">Glow color</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="color" id="bg-glow-color" value="#0c1b40" style="width:36px;height:26px;border:1px solid var(--border2);border-radius:5px;background:none;cursor:pointer;padding:2px;" />
+          <span style="font-size:11px;color:var(--text3);">Centre</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:12px;color:var(--text2);">Edge color</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="color" id="bg-edge-color" value="#02050d" style="width:36px;height:26px;border:1px solid var(--border2);border-radius:5px;background:none;cursor:pointer;padding:2px;" />
+          <span style="font-size:11px;color:var(--text3);">Outer</span>
+        </div>
+      </div>
+    </div>
 
     <!-- Visibility -->
     <div class="section">
@@ -443,11 +457,11 @@
       <div class="section-title">Cashback Strip Position</div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <span style="font-size:12px;color:var(--text2);">Vertical position</span>
-        <span style="font-size:12px;font-weight:600;color:var(--text);" id="cb-pos-val">42px from bottom</span>
+        <span style="font-size:12px;font-weight:600;color:var(--text);" id="cb-pos-val">46px from bottom (fixed)</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span style="font-size:11px;color:var(--text3);">Top</span>
-        <input type="range" id="cb-pos-slider" min="0" max="172" value="42" step="1" style="flex:1;" />
+        <input type="range" id="cb-pos-slider" min="46" max="46" value="46" step="1" style="flex:1;opacity:0.4;pointer-events:none;" />
         <span style="font-size:11px;color:var(--text3);">Bottom</span>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin:12px 0 8px;">
@@ -458,6 +472,18 @@
         <span style="font-size:11px;color:var(--text3);">Left</span>
         <input type="range" id="cb-left-slider" min="0" max="240" value="10" step="1" style="flex:1;" />
         <span style="font-size:11px;color:var(--text3);">Right</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:12px 0 8px;">
+        <span style="font-size:12px;color:var(--text2);">Gradient start color</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="range" id="cb-grad-opacity" min="0" max="40" value="15" step="1" style="width:80px;" />
+          <span style="font-size:12px;font-weight:600;color:var(--text);" id="cb-grad-val">15%</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="font-size:11px;color:var(--text3);white-space:nowrap;">Color</div>
+        <input type="color" id="cb-grad-color" value="#ffffff" style="width:36px;height:26px;border:1px solid var(--border2);border-radius:5px;background:none;cursor:pointer;padding:2px;" />
+        <span style="font-size:11px;color:var(--text3);">Opacity controls fade intensity</span>
       </div>
       <p style="font-size:11px;color:var(--text3);margin-top:6px;">Drag sliders — or drag the strip on the card directly</p>
     </div>
@@ -473,24 +499,25 @@
       <p class="hint">PNG with transparent background recommended</p>
       <div style="margin-top:14px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          <span style="font-size:12px;color:var(--text2);">Image height</span>
-          <span style="font-size:12px;font-weight:600;color:var(--text);" id="model-size-val">75%</span>
+          <span style="font-size:12px;color:var(--text2);">Width</span>
+          <span style="font-size:12px;font-weight:600;color:var(--text);" id="model-width-val">48%</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:11px;color:var(--text3);">Small</span>
-          <input type="range" id="model-size-slider" min="30" max="100" value="75" step="1" style="flex:1;" />
-          <span style="font-size:11px;color:var(--text3);">Full</span>
+          <span style="font-size:11px;color:var(--text3);">Narrow</span>
+          <input type="range" id="model-width-slider" min="20" max="100" value="48" step="1" style="flex:1;" />
+          <span style="font-size:11px;color:var(--text3);">Wide</span>
         </div>
         <div style="margin-top:12px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <span style="font-size:12px;color:var(--text2);">Image width</span>
-            <span style="font-size:12px;font-weight:600;color:var(--text);" id="model-width-val">48%</span>
+            <span style="font-size:12px;color:var(--text2);">Right offset</span>
+            <span style="font-size:12px;font-weight:600;color:var(--text);" id="model-right-val">0px</span>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:11px;color:var(--text3);">Narrow</span>
-            <input type="range" id="model-width-slider" min="20" max="100" value="48" step="1" style="flex:1;" />
-            <span style="font-size:11px;color:var(--text3);">Wide</span>
+            <span style="font-size:11px;color:var(--text3);">Edge</span>
+            <input type="range" id="model-right-slider" min="0" max="117" value="0" step="1" style="flex:1;" />
+            <span style="font-size:11px;color:var(--text3);">117px</span>
           </div>
+          <p style="font-size:11px;color:var(--text3);margin-top:4px;">Top locked 18px · Bottom locked 46px</p>
         </div>
       </div>
     </div>
@@ -551,14 +578,13 @@ $('badge-img-upload').addEventListener('change', e => {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
+    const badge = $('el-badge');
     const img = $('badge-img-el');
     img.src = ev.target.result;
-    img.style.display = 'block';
-    img.style.width = '100%';
-    img.style.height = '100%';
-    img.style.objectFit = 'cover';
-    img.style.borderRadius = '50%';
-    const inner = $('el-badge').querySelector('.badge-inner');
+    img.style.cssText = 'display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;z-index:2;';
+    badge.style.background = 'none';
+    badge.style.border = 'none';
+    const inner = badge.querySelector('.badge-inner');
     if (inner) inner.style.display = 'none';
   };
   reader.readAsDataURL(file);
@@ -605,45 +631,17 @@ function makeDraggable(el, onMove) {
   });
 }
 
-function syncCashbackSlider(el) {
-  const card  = $('card');
-  const cs    = getComputedStyle(el);
-  const cardH = card.offsetHeight;
-  const elH   = el.offsetHeight;
-  let b;
-  if (cs.bottom !== 'auto' && cs.bottom !== '') {
-    b = parseFloat(cs.bottom);
-  } else {
-    b = cardH - elH - parseFloat(cs.top || 0);
-  }
-  b = Math.max(0, Math.min(172, Math.round(b)));
-  $('cb-pos-slider').value = b;
-  $('cb-pos-val').textContent = b + 'px from bottom';
-
-  let l;
-  if (cs.left !== 'auto' && cs.left !== '') {
-    l = parseFloat(cs.left);
-  } else {
-    l = 0;
-  }
-  l = Math.max(0, Math.min(240, Math.round(l)));
-  $('cb-left-slider').value = l;
-  $('cb-left-val').textContent = l + 'px from left';
-}
-
-['el-logo','el-badge','el-headline','el-cta'].forEach(id => {
+['el-logo','el-badge','el-cta'].forEach(id => {
   const el = $(id);
   if (el) makeDraggable(el);
 });
-makeDraggable($('el-cashback'), syncCashbackSlider);
+/* cashback: horizontal only via slider, vertical locked to 46px */
 
-/* ─── Cashback vertical slider ─── */
+/* ─── Cashback vertical slider — locked, display only ─── */
 $('cb-pos-slider').addEventListener('input', e => {
-  const val = parseInt(e.target.value);
-  const el  = $('el-cashback');
-  el.style.bottom = val + 'px';
-  el.style.top    = 'auto';
-  $('cb-pos-val').textContent = val + 'px from bottom';
+  /* vertical is fixed at 46px — slider is read-only display */
+  $('cb-pos-slider').value = 46;
+  $('cb-pos-val').textContent = '46px from bottom';
 });
 
 $('cb-left-slider').addEventListener('input', e => {
@@ -655,22 +653,47 @@ $('cb-left-slider').addEventListener('input', e => {
 });
 
 /* ─── Model image size sliders ─── */
-$('model-size-slider').addEventListener('input', e => {
-  const val = e.target.value;
-  $('model-area').style.height = val + '%';
-  $('model-size-val').textContent = val + '%';
-});
 $('model-width-slider').addEventListener('input', e => {
-  const val = e.target.value;
-  const img = $('model-img-el');
-  const ph  = $('model-ph');
+  const val = parseInt(e.target.value);
   const w   = (302 * val / 100).toFixed(0) + 'px';
-  img.style.width  = w;
-  img.style.height = '100%';
-  img.style.objectFit = 'cover';
-  ph.style.width = w;
+  $('model-area').style.width = w;
   $('model-width-val').textContent = val + '%';
 });
+$('model-right-slider').addEventListener('input', e => {
+  const val = parseInt(e.target.value);
+  $('model-area').style.right = val + 'px';
+  $('model-right-val').textContent = val + 'px';
+});
+
+/* ─── Cashback gradient color ─── */
+function updateCbGradient() {
+  const hex = $('cb-grad-color').value;
+  const op  = parseInt($('cb-grad-opacity').value) / 100;
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  $('el-cashback').style.background = `linear-gradient(90deg, rgba(${r},${g},${b},${op}) 0%, rgba(${r},${g},${b},0) 100%)`;
+}
+$('cb-grad-color').addEventListener('input', () => { updateCbGradient(); });
+$('cb-grad-opacity').addEventListener('input', e => {
+  $('cb-grad-val').textContent = e.target.value + '%';
+  updateCbGradient();
+});
+
+/* ─── Init model area width ─── */
+(function() {
+  const w = (302 * 48 / 100).toFixed(0) + 'px';
+  $('model-area').style.width = w;
+})();
+
+/* ─── Background gradient ─── */
+function updateBgGradient() {
+  const glow = $('bg-glow-color').value;
+  const edge = $('bg-edge-color').value;
+  $('card').style.background = `radial-gradient(ellipse at 70% 40%, ${glow} 0%, ${edge} 100%)`;
+}
+$('bg-glow-color').addEventListener('input', updateBgGradient);
+$('bg-edge-color').addEventListener('input', updateBgGradient);
 
 /* ─── Download PNG ─── */
 $('dl-btn').addEventListener('click', () => {
