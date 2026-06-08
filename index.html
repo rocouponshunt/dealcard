@@ -154,12 +154,12 @@
 
   #model-area {
     position: absolute;
-    top: 18px; bottom: 46px; right: 0;
+    top: 18px; bottom: 78px; right: 0;
     width: auto;
     z-index: 3;
     pointer-events: none;
-    display: flex; align-items: stretch; justify-content: flex-end;
-    overflow: hidden;
+    display: flex; align-items: flex-start; justify-content: flex-end;
+    overflow: visible;
   }
   .model-ph {
     width: 120px; height: 100%;
@@ -172,7 +172,7 @@
   }
   .model-ph i { font-size: 24px; color: rgba(255,255,255,0.18); }
   .model-ph span { font-size: 8px; color: rgba(255,255,255,0.25); text-align: center; padding: 0 8px; }
-  #model-img-el { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 4px 0 0 4px; display: none; }
+  #model-img-el { width: 100%; height: 100%; object-fit: contain; object-position: top right; display: none; }
 
   /* drag selection ring */
   .card-el:active { outline: 1.5px dashed rgba(255,255,255,0.4); outline-offset: 2px; border-radius: 4px; }
@@ -528,6 +528,8 @@ $('img-upload').addEventListener('change', e => {
     const img = $('model-img-el');
     img.src = ev.target.result;
     img.style.display = 'block';
+    img.style.objectFit = 'contain';
+    img.style.objectPosition = 'top right';
     $('model-ph').style.display = 'none';
   };
   reader.readAsDataURL(file);
@@ -648,11 +650,13 @@ $('model-gen-btn').addEventListener('click', async () => {
   label.textContent = 'Generating…';
   $('model-gen-btn').disabled = true;
   try {
-    const fullPrompt = `Editorial lifestyle product or model image for a fashion/deals app banner. ${prompt}. Real human photography style, aspirational, clean. Transparent or very dark background so subject stands out. Portrait orientation, subject centered.`;
+    const fullPrompt = `Editorial lifestyle model image for a fashion/deals app banner. ${prompt}. Real human photography, aspirational, clean dark or navy background. IMPORTANT: full upper body visible from head to hip, no cropping of head or shoulders. Subject positioned on the right side, looking slightly left. Portrait aspect ratio, plenty of headroom above subject. No text, no logos.`;
     const b64 = await generateImage(fullPrompt, '1024x1024');
     const img = $('model-img-el');
     img.src = b64;
     img.style.display = 'block';
+    img.style.objectFit = 'contain';
+    img.style.objectPosition = 'top right';
     $('model-ph').style.display = 'none';
   } catch(e) {
     errEl.textContent = e.message;
