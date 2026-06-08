@@ -316,9 +316,9 @@
 
   .c-brand-header {
     position: absolute;
-    top: 10px; left: 12px;
+    top: 12px; left: 12px;
     display: flex; align-items: center;
-    gap: 0;
+    gap: 12px;
     z-index: 3;
   }
   #c-logo-badge {
@@ -328,18 +328,14 @@
     object-fit: contain;
   }
   #c-campaign-badge {
-    width: 54px; height: 54px;
-    position: absolute;
-    top: 6px; left: 50%;
-    transform: translateX(-50%);
+    width: 36px; height: 36px;
     object-fit: contain;
     display: none;
-    z-index: 3;
   }
 
   .c-hero {
     position: absolute;
-    bottom: 52px; left: 12px;
+    top: 76px; left: 12px;
     z-index: 3;
   }
   #c-headline {
@@ -393,7 +389,7 @@
 
   #c-cta {
     position: absolute;
-    bottom: 46px; right: 12px;
+    bottom: 12px; right: 12px;
     background: #fff;
     color: #0036DA;
     font-size: 11px;
@@ -733,13 +729,10 @@
       <div id="card-preview">
         <div id="card-bg"></div>
 
-        <!-- Brand Logo (top-left) -->
         <div class="c-brand-header">
           <img id="c-logo-badge" src="" alt="brand logo" style="height:22px; display:none; border-radius:4px; object-fit:contain;">
+          <img id="c-campaign-badge" src="" alt="campaign badge" style="display:none;">
         </div>
-
-        <!-- Campaign Badge (top-center) -->
-        <img id="c-campaign-badge" src="" alt="campaign badge">
 
         <!-- Hero Copy -->
         <div class="c-hero">
