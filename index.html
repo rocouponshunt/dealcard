@@ -716,7 +716,7 @@ $('model-gen-btn').addEventListener('click', async () => {
     } else {
       // Marketplace path: generate from prompt
       label.textContent = 'Generating…';
-      const fullPrompt = `Two aspirational lifestyle models for a fashion deals app card. ${prompt}. Both models standing close together filling the full width of the frame — no empty space on sides. Full upper body visible from head to hip, do NOT crop heads or shoulders. Models positioned on the right half of the composition, facing slightly inward. Editorial photography, dark navy or matching background. Wide horizontal composition, subjects fill the frame shoulder to shoulder. No text, no logos.`;
+      const fullPrompt = `Two aspirational lifestyle models, ${prompt}. CRITICAL: pure transparent background — no background color, no studio backdrop, no gradient, no shadow, no floor, no environment. Subjects only on transparent/white background as a clean cutout PNG. Both models standing close together filling the full frame width shoulder to shoulder. Full upper body head to hip visible, do NOT crop heads. Editorial fashion photography style. No text, no logos, no props except clothing.`;
       b64 = await generateImage(fullPrompt, '1024x1024');
     }
     const img = $('model-img-el');
