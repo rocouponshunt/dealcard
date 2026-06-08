@@ -154,12 +154,13 @@
 
   #model-area {
     position: absolute;
-    top: 14px; bottom: 46px; right: 0;
+    bottom: 46px; right: 0;
     width: 145px;
+    height: 110px;
     z-index: 3;
     pointer-events: none;
-    display: flex; align-items: flex-start; justify-content: flex-end;
-    overflow: visible;
+    display: flex; align-items: flex-end; justify-content: flex-end;
+    overflow: hidden;
   }
   .model-ph {
     width: 120px; height: 100%;
@@ -172,7 +173,7 @@
   }
   .model-ph i { font-size: 24px; color: rgba(255,255,255,0.18); }
   .model-ph span { font-size: 8px; color: rgba(255,255,255,0.25); text-align: center; padding: 0 8px; }
-  #model-img-el { width: auto; height: 100%; max-height: 100%; object-fit: contain; object-position: right top; display: none; }
+  #model-img-el { width: 100%; height: 100%; object-fit: contain; object-position: bottom right; display: none; }
 
   /* drag selection ring */
   .card-el:active { outline: 1.5px dashed rgba(255,255,255,0.4); outline-offset: 2px; border-radius: 4px; }
@@ -602,11 +603,6 @@ $('model-width-slider').addEventListener('input', e => {
   const val = parseInt(e.target.value);
   const w = (302 * val / 100).toFixed(0) + 'px';
   $('model-area').style.width = w;
-  const img = $('model-img-el');
-  if (img.style.display !== 'none') {
-    img.style.width = '100%';
-    img.style.maxWidth = w;
-  }
   $('model-width-val').textContent = val + '%';
 });
 $('model-right-slider').addEventListener('input', e => {
